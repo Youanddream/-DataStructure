@@ -1,35 +1,12 @@
-#pragma once
 #include<iostream>
+#include<stdlib.h>
+#include "ListNode.h"
 using namespace std;
 
-template<class DataType>
-class LinList;
-
-template<class DataType>
-class ListNode
-{
-private:
-	ListNode<DataType>* next;
-	DataType data;
-public:
-	ListNode(ListNode<DataType>* ptrNext = NULL)
-	{
-		next = ptrNext;
-	}
-
-	ListNode(const DataType& item, ListNode<DataType>* perNext = NULL)
-	{
-		data = item;
-		next = perNext;
-	}
-
-	~ListNode() {};
-	friend class LinList<DataType>;
-};
 
 
 template<class DataType>
-class Linlist
+class LinList
 {
 private:
 	ListNode<DataType>* head;
@@ -37,26 +14,27 @@ private:
 	ListNode<DataType>* Index(int i);
 
 public:
-	Linlist();
-	~Linlist();
+	LinList();
+	~LinList();
 
 	int Size() const;
 	void Insert(const DataType& item, int i);
 	DataType Delete(int i);
 	DataType GetData(int i);
-	DataType InversionToNew();
+	LinList InversionToNew();
 	void Inversion();
+	//LinList<DataType> operator =(LinList<DataType> &a) { head = a.head; size = a.size; }
 };
 
 template<class DataType>
-Linlist<DataType>::Linlist()
+LinList<DataType>::LinList()
 {
 	head = new ListNode<DataType>();
 	size = 0;
 }
 
 template<class DataType>
-Linlist<DataType>::~Linlist()
+LinList<DataType>::~LinList()
 {
 	ListNode<DataType> *p, *q;
 	p = head;
@@ -72,12 +50,12 @@ Linlist<DataType>::~Linlist()
 
 
 template<class DataType>
-ListNode<DataType>* Linlist<DataType>::Index(int i)
+ListNode<DataType> * LinList<DataType>::Index(int i)
 {
 	if (i<-1 || i>size - 1)
 	{
-		cout << "参数越界！";
-		exit（0）;
+		cout << "参数越界！index";
+		//exit（0）;
 	}
 
 	if (i == -1)
@@ -95,18 +73,18 @@ ListNode<DataType>* Linlist<DataType>::Index(int i)
 
 
 template<class DataType>
-int Linlist<DataType>::Size() const
+int LinList<DataType>::Size() const
 {
 	return size;
 }
 
 template<class DataType>
-void Linlist<DataType>::Insert(const DataType& item, int i)
+void LinList<DataType>::Insert(const DataType& item, int i)
 {
 	if (i<0 || i>size)
 	{
-		cout << "参数越界！";
-		exit（0）;
+		cout << "参数越界！insert";
+		//exit（0）;
 	}
 	ListNode<DataType> *p = Index(i - 1);
 	ListNode<DataType> *q = new ListNode<DataType>(item, p->next);
@@ -119,13 +97,19 @@ DataType LinList<DataType>::Delete(int i)
 {
 	if (size == 0)
 	{
-		cout<<"链表空，无可删除元素！"
+		cout << "链表空，无可删除元素！" << endl;
+		//exit(0);
 	}
-
-	ListNode<DataType> *s,*p=Index(i-1);
-	s=p->next;
-	p->next=p-next->next->next;
-	DataType x=s->data;
+	if (i<0 || i>size - 1)
+	{
+		cout << "参数i越界！delete";
+		//exit(0);
+	}
+	
+	ListNode<DataType> *s, *p = Index(i - 1);
+	s = p->next;
+	p->next = p - next->next->next;
+	DataType x = s->data;
 	size--;
 	return x;
 }
@@ -133,39 +117,41 @@ DataType LinList<DataType>::Delete(int i)
 template<class DataType>
 DataType LinList<DataType>::GetData(int i)
 {
-	if(i<0||i>size-1)
+	if (i<0 || i>size - 1)
 	{
-		cout<<"参数越界！";
-		exit(0);
+		cout << "参数越界！getdata";
+		//exit(0);
 	}
-	ListNode<DataType>  *p=Index(i);
+	ListNode<DataType> *p = Index(i);
 	return p->data;
 }
 
-
 //倒置到新的linlist
-template<class Datatype>
-DataType LinList<DataType>::InversionToNew()
+template<class DataType>
+LinList<DataType> LinList<DataType>::InversionToNew()
 {
-	LinList *b;
-	for(int i=size,j=0,i>0,i--,j++)
+	LinList<DataType> b;
+	for (int i = size-1, j = 0;i>0;i--, j++)
 	{
-		ListNode *p=Index(i);
-		b.Insert(p->data,j);
+		ListNode<DataType> *p = Index(i);
+		b.Insert(p->data, j);
 	}
 	return b->head;
 }
 
+
 //就地倒置
 template<class DataType>
-void  LinList<DataType>::Inversion()
+void LinList<DataType>::Inversion()
 {
-	for(int i=size,j=0,i<j;i--,j++)
+	for (int i = size-1, j = 0; j<i; i--, j++)
 	{
-		ListNode *p,*q=Index(i);
+		ListNode<DataType> *p, *q;
+		p = Index(j);
+		q = Index(i);
 		DataType tmp;
-		tmp=q->data;
-		p=Index(j);
-		p->data=tmp;
+		tmp = q->data;
+		q->data = p->data;
+		p->data = tmp;
 	}
 }
