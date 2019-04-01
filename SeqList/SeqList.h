@@ -1,23 +1,35 @@
 #pragma once
+#include<iostream>
+using namespace std;
 template <class DataType>
 class SeqList
 {
 protected:
-	DataType * list;
+	DataType *list;
 	int maxSize;
 	int size;
 
 public:
 	SeqList(int max = 0);
+	SeqList(DataType *Arr,int low,int high);    //low  highÎªÊý×éÏÂ±ê
 	~SeqList();
 	int Size() const;
+	int maxsize()const;
+	void Expand();
 	void Insert(const DataType& item, int i);
 	DataType Delete(const int i);
 	DataType GetData(int i) const;
+	void InversionToNew();
+	void InversionLocal();
+	/*friend SeqList<DataType> operator =(const SeqList<DataType> &a)
+	{
+		cout << "=ÖØÔØ";
+		list = a.list; maxSize = a.maxSize; size = a.size;
+	}*/
 };
 
 template <class DataType>
-SeqList::SeqList(int max)
+SeqList<DataType>::SeqList(int max)
 {
 	maxSize = max;
 	size = 0;
@@ -25,72 +37,144 @@ SeqList::SeqList(int max)
 }
 
 template <class DataType>
-SeqList::~SeqList()
+SeqList<DataType>::SeqList(DataType *Arr, int low, int high)
 {
-	delete[]list;
-}
-
-template <class DataType>
-int SeqList::Size() const
-{
-	return size;
-}
-
-template <class DataType>
-void SeqList::Insert(const DataType& item, int i)
-{
-	if (size == maxSize)
+	maxSize = (high - low + 1);
+	size = 0;
+	list = new DataType[maxSize];
+	int leng = high - low + 1;
+	for (int i = 0; i < leng; i++, low++)
 	{
-		cout << "é¡ºåºè¡¨å·²æ»¡ï¼Œæ— æ³•æ’å…¥ï¼";
-		exit(0);
-	}
-
-	if (i<0 || i>size)
-	{
-		cout << "å‚æ•°è¶Šç•Œï¼";
-		exit(0);
-	}
-
-	for (int j = size; j>i; j--)
-	{
-		list[j] = list[j - 1];
-		list[i] = item;
+		list[i] = Arr[low];
 		size++;
 	}
 }
 
 template <class DataType>
-DataType SeqList::Delete(const int i)
+SeqList<DataType>::~SeqList()
+{
+	delete[]list;
+}
+
+template <class DataType>
+int SeqList<DataType>::Size() const           
+{
+	return size;
+}
+
+template <class DataType>
+int SeqList<DataType>::maxsize() const      //²âÊÔexpand
+{
+	return maxSize;
+}
+
+template <class DataType>
+void SeqList<DataType>::Expand()
+{
+	if (size == maxSize)
+	{
+		DataType *tmp=list;
+		maxSize = 2 * maxSize;
+		list=new DataType[maxSize];
+		for (int i = 0; i < size; i++)
+		{
+			list[i] = tmp[i];
+		}
+		delete[]tmp;
+		cout << "Íê³ÉÀ©ÈÝ£¡";
+	}
+
+}
+
+template <class DataType>
+void SeqList<DataType>::Insert(const DataType& item, int i)
+{
+	Expand();
+
+	if (i<0 || i>size)                  //Ö»ÄÜÔÚÓÐÊý¾ÝµÄÇø¼äÄÚÈÎÒâ²åÈë  
+										//²»ÄÜÔÚsize+1µ½maxSizeµÄ¿Õ°×Çø¼äÄÚËæÒâ²åÈë
+	{
+		cout << "²ÎÊýÔ½½çinsert£¡";
+		exit(0);
+	}
+
+	for (int j = size; j > i; j--)
+	{
+		list[j] = list[j - 1];
+	}
+	 list[i] = item;
+	 size++;
+	
+}
+
+template <class DataType>
+DataType SeqList<DataType>::Delete(const int i)
 {
 	if (size == 0)
 	{
-		cout << "é¡ºåºè¡¨å·²ç©ºï¼Œæ— æ³•å¯åˆ é™¤å…ƒç´ ï¼";
+		cout << "Ë³Ðò±íÒÑ¿Õ£¬ÎÞ·¨¿ÉÉ¾³ýÔªËØ£¡";
 		exit(0);
 	}
 
 	if (i<0 || i>size - 1)
 	{
-		cout << "å‚æ•°è¶Šç•Œï¼";
+		cout << "²ÎÊýÔ½½ç£¡delete";
 		exit(0);
 	}
 
 	DataType x = list[i];
 
-	for (int j = i; j<size - 1; j++)
+	for (int j = i; j < size - 1; j++)
 	{
 		list[j] = list[j + 1];
-		size--;
-		return x;
 	}
+	size--;
+	return x;
+	
 }
 
 template <class DataType>
-DataType SeqList::GetData(int i) const
+DataType SeqList<DataType>::GetData(int i) const
 {
-	if (i<0 || i>size - 1)
+	if (i<0 || i>maxSize - 1)
 	{
-		cout << "å‚æ•°è¶Šç•Œï¼";
+		cout << "²ÎÊýÔ½½ç£¡getdata";
 		exit(0);
 	}
 	return list[i];
+}
+
+template <class DataType>
+void SeqList<DataType>::InversionToNew()
+{
+	/*int leng = size - 1; 
+	int i = leng;
+	int j = 0;
+	DataType *Arr;
+	Arr=new DataType[size];
+	for (i,j; i <0;i--, j++)
+	{		
+		Arr[j]=list[i];
+	}
+	SeqList<DataType> a(Arr, 0, leng);*/
+	SeqList<DataType> a;
+	for (int i = size - 1, j = 0; i > 0; i--, j++)
+	{
+		a.Insert(GetData(i), j);
+	}
+	for (int i = 0; i < 5; i++)
+	{
+		cout << a.GetData(i) << endl;
+	}	
+}
+
+template <class DataType>
+void SeqList<DataType>::InversionLocal()
+{
+	for (int i = 0, j = size - 1; i <j; i++, j--)
+	{
+		DataType tmp = list[i];
+		list[i] = list[j];
+		list[j] = tmp;
+	}
 }
